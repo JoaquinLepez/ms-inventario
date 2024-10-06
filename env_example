@@ -1,0 +1,7 @@
+FLASK_APP=app.py
+SECRET_KEY=contraseña
+FLASK_CONTEXT=development
+DEV_DB_URI=postgresql://usuario:contraseña@red:puerto/nombre_database
+TEST_DB_URI=postgresql://usuario:contraseña@red:puerto/nombre_database
+PROD_DB_URI=postgresql://usuario:contraseña@red:puerto/nombre_database
+
