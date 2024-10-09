@@ -1,0 +1,6 @@
+FLASK_CONTEXT=production
+FLASK_APP = app.py
+SECRET_KEY = contraseña
+SQLALCHEMY_TRACK_MODIFICATIONS=False
+SQLALCHEMY_RECORD_QUERIES=False
+PROD_DB_URI='postgresql://usuario:contraseña@servicio:puerto/database'

@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  ms-inventario:
+    image: ms-inventario:v1.0
+    environment:
+      - FLASK_CONTEXT=${FLASK_CONTEXT}
+      - FLASK_APP=${FLASK_APP}
+      - SECRET_KEY=${SECRET_KEY}
+      - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}  
+      - SQLALCHEMY_RECORD_QUERIES=${SQLALCHEMY_RECORD_QUERIES}
+      - PROD_DB_URI=${PROD_DB_URI}
+    ports:
+      - "3004:3004"
+    networks:
+      - ecommerce_red
+    
+networks:
+  ecommerce_red:
+    external: true  
