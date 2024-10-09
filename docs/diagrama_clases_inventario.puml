@@ -1,0 +1,17 @@
+@startuml Stock - Diagrama de clases
+
+class Model {
+ clase de SQLAlchemy
+}
+
+class Stock {
+    - id: int
+    - producto_id: int
+    - fecha_transaccion: datetime
+    - cantidad: int
+    - entrada_salida: int // 1: entrada, 2: salida
+}
+
+Model <|-- Stock
+
+@enduml
