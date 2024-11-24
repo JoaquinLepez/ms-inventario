@@ -6,7 +6,7 @@ class StockRepository:
     def all(self) -> List[Stock]:
         return db.session.query(Stock).all()
     
-    def save(self, stock: Stock) -> Stock:
+    def add(self, stock: Stock) -> Stock:
         db.session.add(stock)
         db.session.commit()
         return stock

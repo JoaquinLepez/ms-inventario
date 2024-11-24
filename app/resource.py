@@ -11,7 +11,7 @@ inventario = Blueprint('inventario', __name__)
 
 
 @inventario.route('/inventario', methods=['GET'])
-def index():
+def get_all():
     response_builder = ResponseBuilder()
     data = stock_schema.dump(stock_service.all(), many=True)
     response_builder.add_message("Inventario found").add_status_code(200).add_data(data)
@@ -22,7 +22,7 @@ def add():
     response_builder = ResponseBuilder()
     try:
         stock = stock_schema.load(request.json)
-        data = stock_schema.dump(stock_service.save(stock))
+        data = stock_schema.dump(stock_service.add(stock))
         response_builder.add_message("Inventario added").add_status_code(201).add_data(data)
         return response_schema.dump(response_builder.build()), 201
     except ValidationError as err:

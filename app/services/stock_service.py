@@ -1,15 +1,22 @@
 from ..repository import StockRepository
 from app.models import Stock
+from app import cache
 
 repository = StockRepository()
 
 class StockService:
 
     def all(self) -> list[Stock]:
-        return repository.all()
+        result = cache.get('stock')
+        if result is None:
+            result = repository.all()
+            cache.set('stock', result, timeout=15)
+        return result
     
-    def save(self, stock: Stock) -> Stock:
-        return repository.save(stock)
+    def add(self, stock: Stock) -> Stock:
+        stock = repository.add(stock)
+        cache.set(f'stock_{stock.id}', stock, timeout=15)
+        return stock
     
     def delete(self, id: int) -> bool:
         stock = self.find(id)
