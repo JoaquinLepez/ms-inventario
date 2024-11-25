@@ -18,7 +18,7 @@ def create_app():
     db.init_app(app)
     cache.init_app(app, config=cache_config)
 
-    from app.resource import inventario
+    from app.resources.resource import inventario
     app.register_blueprint(inventario, url_prefix='/api/v1')
 
     return app

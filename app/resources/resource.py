@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from marshmallow import ValidationError
-from .services import StockService, ResponseBuilder
-from .mapping import StockSchema, ResponseSchema
+from ..services import StockService, ResponseBuilder
+from ..mapping import StockSchema, ResponseSchema
 
 response_schema = ResponseSchema()
 stock_service = StockService()
@@ -41,3 +41,10 @@ def delete(id):
         return response_schema.dump(response_builder.build()), 404
 
 
+@inventario.route('/inventario/<int:id>', methods=['GET'])
+def get_cuantity(id):
+    response_builder = ResponseBuilder()
+    cuantity = stock_service.cuantity(id)
+    response_builder.add_message("Cuantity found").add_status_code(200).add_data(cuantity)
+    return response_schema.dump(response_builder.build()), 200
+       

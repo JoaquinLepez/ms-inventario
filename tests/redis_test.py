@@ -43,6 +43,16 @@ class RedisTestCase(unittest.TestCase):
         self.assertEqual(cached_stock.fecha_transaccion, stock1.fecha_transaccion)
         self.assertEqual(cached_stock.cantidad, stock1.cantidad)
         self.assertEqual(cached_stock.entrada_salida, stock1.entrada_salida)
+    
+    def test_cache_after_deleting_stock(self):
+        stock = Stock(producto_id=1, fecha_transaccion='2024-09-13T15:30:00', cantidad=1, entrada_salida=1)
+        stock1 = service.add(stock)
+        cached_stock = cache.get(f'stock_{stock1.id}')
+        self.assertIsNotNone(cached_stock)
+
+        service.delete(stock1.id)
+        cached_stock = cache.get(f'stock_{stock1.id}')
+        self.assertIsNone(cached_stock)
 
 if __name__ == '__main__':
     unittest.main()

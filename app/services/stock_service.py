@@ -1,4 +1,5 @@
-from ..repository import StockRepository
+from datetime import datetime
+from ..repositories.repository import StockRepository
 from app.models import Stock
 from app import cache
 
@@ -14,6 +15,7 @@ class StockService:
         return result
     
     def add(self, stock: Stock) -> Stock:
+        stock.fecha_transaccion = datetime.now()
         stock = repository.add(stock)
         cache.set(f'stock_{stock.id}', stock, timeout=15)
         return stock
@@ -21,6 +23,7 @@ class StockService:
     def delete(self, id: int) -> bool:
         stock = self.find(id)
         if stock:
+            cache.delete(f'stock_{stock.id}')
             repository.delete(stock)
             return True
         else: 
@@ -29,3 +32,5 @@ class StockService:
     def find(self, id: int) -> Stock:
         return repository.find(id)
     
+    def cuantity(self, id: int) -> int:
+        return repository.cuantity(id)
