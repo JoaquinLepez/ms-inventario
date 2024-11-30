@@ -6,9 +6,7 @@ class StockTestCase(unittest.TestCase):
     def setUp(self):
         # User
         self.IDPRODUCTO_PRUEBA = 1
-        self.FECHATRANSACCION_PRUEBA = "2020-01-01:00:00"
         self.CANTIDAD_PRUEBA = 6
-        self.ENTRADASALIDA_PRUEBA = 1
     
         os.environ['FLASK_CONTEXT'] = 'testing'
         self.app = create_app()
@@ -23,16 +21,12 @@ class StockTestCase(unittest.TestCase):
         stock = self.__get_stock()
 
         self.assertEqual(stock.producto_id, self.IDPRODUCTO_PRUEBA)
-        self.assertEqual(stock.fecha_transaccion, self.FECHATRANSACCION_PRUEBA)
         self.assertEqual(stock.cantidad, self.CANTIDAD_PRUEBA)
-        self.assertEqual(stock.entrada_salida, self.ENTRADASALIDA_PRUEBA)
 
     def __get_stock(self):
         stock = Stock()
         stock.producto_id = self.IDPRODUCTO_PRUEBA
-        stock.fecha_transaccion = self.FECHATRANSACCION_PRUEBA
         stock.cantidad = self.CANTIDAD_PRUEBA
-        stock.entrada_salida = self.ENTRADASALIDA_PRUEBA
 
         return stock
     

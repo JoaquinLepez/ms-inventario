@@ -1,0 +1,2 @@
+from .movimiento_repository import MovimientoRepository
+from .stock_repository import StockRepository

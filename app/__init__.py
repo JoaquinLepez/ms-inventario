@@ -1,10 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
+from flask_migrate import Migrate
+from sqlalchemy import MetaData
 import os
 from app.config import config, cache_config
 
-db = SQLAlchemy()
+db = SQLAlchemy(metadata= MetaData(schema= 'inventario'))
+migrate = Migrate()
 cache = Cache()
 
 def create_app():
@@ -16,6 +19,7 @@ def create_app():
     app.config.from_object(configuration)
 
     db.init_app(app)
+    migrate.init_app(app, db, version_table='alembic_version_inventario')
     cache.init_app(app, config=cache_config)
 
     from app.resources.resource import inventario
