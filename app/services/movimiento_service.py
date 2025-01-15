@@ -4,13 +4,20 @@ from app.repositories import MovimientoRepository
 from app.services import StockService
 from app.models import Stock, Movimiento
 from app import cache
+
+
 class InsufficientStockException(Exception):
     def __init__(self, message="No hay suficiente stock"):
         self.message = message
         super().__init__(self.message)
 
+class StockBlockException(Exception):
+    def __init__(self, message="El stock está bloqueado por otro proceso"):
+        self.message = message
+        super().__init__(self.message)
+
 repository = MovimientoRepository()
-stock = StockService()
+stock_service = StockService()
 lock = Lock()
 
 class MovimientoService:
@@ -21,17 +28,21 @@ class MovimientoService:
             result = repository.all()
             cache.set('movimientos', result, timeout=15)
         return result
-    
+
     def add(self, movimiento: Movimiento) -> Movimiento:
         lock.acquire()
-        if movimiento.entrada_salida == -1 and stock.cuantity(movimiento.producto_id) < movimiento.cantidad:
+        stock = stock_service.get_stock(movimiento.producto_id)
+        if movimiento.entrada_salida == -1 and stock.cantidad < movimiento.cantidad:
             lock.release()    
             raise InsufficientStockException()
         movimiento.fecha_transaccion = datetime.now()
         repository.add(movimiento)
-        stock.add(movimiento)
+        new_cuantity = stock.cantidad + (movimiento.entrada_salida * movimiento.cantidad)
+        stock_service.update_cuantity(stock.id, new_cuantity)
+        cache.delete(f'stock_of_{movimiento.producto_id}')
         lock.release()
         return movimiento
+    
     
     def delete(self, id: int) -> bool:
         movimiento = self.find(id)

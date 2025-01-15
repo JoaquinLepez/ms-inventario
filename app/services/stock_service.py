@@ -12,18 +12,14 @@ class StockService:
             result = repository.all()
             cache.set('stock', result, timeout=15)
         return result
-    
-    def add(self, movimiento: Movimiento) -> Stock:
-        stock = self.find_by_product_id(movimiento.producto_id)
-        if stock:
-            cantidad = stock.cantidad + (movimiento.entrada_salida * movimiento.cantidad)
-            repository.update_cuantity(stock.id, cantidad)
-            cache.delete(f'stock_cuantity{stock.producto_id}')
-        else:
-            stock = Stock(producto_id=movimiento.producto_id, cantidad=movimiento.cantidad)
-            repository.add(stock)
 
+    
+    def add(self, stock: Stock) -> Stock:
+        repository.add(stock)
         return stock
+
+    def update_cuantity(self, id_stock: int, cuantity: int) -> None:
+        repository.update_cuantity(id_stock, cuantity)
 
     def delete(self, id: int) -> bool:
         stock = self.find(id)
@@ -37,14 +33,17 @@ class StockService:
     def find_by_product_id(self, product_id: int) -> Stock:
         return repository.find_by_product_id(product_id)
     
-    def cuantity(self, product_id: int) -> int:
-        stock = self.find_by_product_id(product_id)
-        if stock:
-            cantidad = cache.get(f'stock_cuantity{product_id}')
-            if cantidad is None:
-                cantidad = stock.cantidad
-                cache.set(f'stock_cuantity{product_id}', cantidad, timeout=15)
-            return cantidad
-        else:
-            return None
 
+    def get_stock(self, product_id: int) -> Stock:
+        stock = cache.get(f'stock_of_{product_id}')
+        if stock is None:
+            stock = self.find_by_product_id(product_id)
+            if stock is None:
+                new_stock = Stock(
+                    producto_id = product_id,
+                    cantidad = 0
+                )
+                stock = self.add(new_stock)
+            cache.set(f'stock_of_{product_id}', stock, timeout=100)
+        return stock
+    

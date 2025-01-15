@@ -2,11 +2,10 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
 from flask_migrate import Migrate
-from sqlalchemy import MetaData
 import os
 from app.config import config, cache_config
 
-db = SQLAlchemy(metadata= MetaData(schema= 'inventario'))
+db = SQLAlchemy()
 migrate = Migrate()
 cache = Cache()
 
