@@ -39,7 +39,7 @@ class MovimientoService:
         repository.add(movimiento)
         new_cuantity = stock.cantidad + (movimiento.entrada_salida * movimiento.cantidad)
         stock_service.update_cuantity(stock.id, new_cuantity)
-        cache.delete(f'stock_of_{movimiento.producto_id}')
+        cache.set(f'stock_of_{movimiento.producto_id}', new_cuantity, 100)
         lock.release()
         return movimiento
     

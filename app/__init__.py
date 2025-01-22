@@ -19,7 +19,9 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db, version_table='alembic_version_inventario')
-    cache.init_app(app, config=cache_config)
+
+    cache_configuration = cache_config[app_context if app_context else 'development']
+    cache.init_app(app, config=cache_configuration)
 
     from app.resources.resource import inventario
     app.register_blueprint(inventario, url_prefix='/api/v1')
