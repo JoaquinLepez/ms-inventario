@@ -17,9 +17,10 @@ class StockRepository:
         db.session.commit()
         return None
     
-    def update_cuantity(self, id: int, cuantity = int) -> None:
-        db.session.query(Stock).filter(Stock.id == id).update({'cantidad': cuantity})
+    def update_cuantity(self, product_id: int, cuantity = int) -> None:
+        db.session.query(Stock).filter(Stock.producto_id == product_id).update({'cantidad': cuantity})
         db.session.commit()
 
     def find_by_product_id(self, product_id: int) -> Stock:
-        return db.session.query(Stock).filter(Stock.producto_id == product_id).first()
+        result = db.session.query(Stock.cantidad).filter(Stock.producto_id == product_id).with_for_update().first()  
+        return result[0] if result else 0

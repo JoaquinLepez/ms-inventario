@@ -18,8 +18,8 @@ class StockService:
         repository.add(stock)
         return stock
 
-    def update_cuantity(self, id_stock: int, cuantity: int) -> None:
-        repository.update_cuantity(id_stock, cuantity)
+    def update_cuantity(self, product_id: int, cuantity: int) -> None:
+        repository.update_cuantity(product_id, cuantity)
 
     def delete(self, id: int) -> bool:
         stock = self.find(id)
@@ -30,11 +30,12 @@ class StockService:
         else: 
             return False
     
-    def find_by_product_id(self, product_id: int) -> Stock:
-        return repository.find_by_product_id(product_id)
-    
+    def find_by_product_id(self, product_id: int) -> int:
+        cantidad = repository.find_by_product_id(product_id) 
+        return cantidad
+     
 
-    def get_stock(self, product_id: int) -> Stock:
+    def get_stock(self, product_id: int) -> int:
         stock = cache.get(f'stock_of_{product_id}')
         if stock is None:
             stock = self.find_by_product_id(product_id)
