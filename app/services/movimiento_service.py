@@ -3,12 +3,8 @@ from datetime import datetime
 from app.repositories import MovimientoRepository
 from app.services import StockService
 from app.models import Stock, Movimiento
-from app import cache
+from app import cache, r_connection
 import redis
-
-r = redis.Redis(host='redis_ecommerce', port=6379, db=1, password='A123456')
-redis_lock = redis.lock.Lock(r,name='Mi_lock', timeout= 10)
-
 
 class InsufficientStockException(Exception):
     def __init__(self, message="No hay suficiente stock"):
@@ -22,7 +18,6 @@ class StockBlockException(Exception):
 
 repository = MovimientoRepository()
 stock_service = StockService()
-lock = Lock()
 
 class MovimientoService:
 
@@ -34,11 +29,10 @@ class MovimientoService:
         return result
 
     def add(self, movimiento: Movimiento) -> Movimiento:
+        redis_lock = redis.lock.Lock(r_connection,name=f'Lock_of_product_{movimiento.producto_id}', timeout= 10)
         redis_lock.acquire(blocking=True)
-        lock.acquire()
         stock = stock_service.get_stock(movimiento.producto_id)
         if movimiento.entrada_salida == -1 and stock < movimiento.cantidad:
-            lock.release()   
             redis_lock.release() 
             raise InsufficientStockException()
         movimiento.fecha_transaccion = datetime.now()
@@ -46,7 +40,6 @@ class MovimientoService:
         new_cuantity = stock + (movimiento.entrada_salida * movimiento.cantidad)
         stock_service.update_cuantity(movimiento.producto_id, new_cuantity)
         cache.set(f'stock_of_{movimiento.producto_id}', new_cuantity, 100)
-        lock.release()
         redis_lock.release()
         return movimiento
     

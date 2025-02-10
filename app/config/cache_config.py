@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+import redis
 
 basedir = os.path.abspath(Path(__file__).parents[2])
 load_dotenv(os.path.join(basedir, '.env'))
@@ -36,10 +37,15 @@ cache_config = {
     'default': class_to_dict(DevelopmentCacheConfig)
 }
 
-# redis_client = redis.StrictRedis(
-#     host=os.environ.get('REDIS_HOST'),
-#     port=int(os.environ.get('REDIS_PORT')),
-#     db=int(os.environ.get('REDIS_DB')),
-#     password=os.environ.get('REDIS_PASSWORD'),
-#     decode_responses=True
-# )
+redis_connection = {
+    'development': redis.Redis(
+        host = os.environ.get('DEV_REDIS_HOST'),
+        port = os.environ.get('DEV_REDIS_PORT'), 
+        db = os.environ.get('DEV_REDIS_DB'), 
+        password = os.environ.get('DEV_REDIS_PASSWORD')),
+    'production': redis.Redis(
+        host = os.environ.get('REDIS_HOST'),
+        port = os.environ.get('REDIS_PORT'), 
+        db = os.environ.get('REDIS_DB'), 
+        password = os.environ.get('REDIS_PASSWORD')),
+}
